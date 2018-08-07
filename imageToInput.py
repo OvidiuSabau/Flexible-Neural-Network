@@ -6,7 +6,7 @@ import pandas as pd
 #dir refers to the directory that contains the folders with the files
 #make sure that csv_name ends with .csv
 
-def imagesToInputMatrixWithLabels(dir, csv_name):
+def imagesToInputMatrixWithLabels(dir, save_as_csv = True, csv_name = "matrix.csv"):
 
     #The foldername that a file is in is used as label in this current implementation. Feel free to change that.
     first_elem = True
@@ -35,19 +35,22 @@ def imagesToInputMatrixWithLabels(dir, csv_name):
     matrix = np.append(matrix, labels_list, axis=1)
     np.random.shuffle(matrix)
 
-    #Create a list for the CSV header
-    names = []
-    for i in range(784):
-        temp = "label_" + str(i)
-        names.append(temp)
-    names.append("labels")
+    if save_as_csv:
 
-    #Save the matrix as .csv
-    df_matrix = pd.DataFrame(matrix,columns=names)
-    df_matrix.to_csv(csv_name)
+    #Create a list for the CSV header
+        names = []
+        for i in range(784):
+            temp = "label_" + str(i)
+            names.append(temp)
+        names.append("labels")
+
+        #Save the matrix as .csv
+        df_matrix = pd.DataFrame(matrix,columns=names)
+        df_matrix.to_csv(csv_name)
+
     return matrix
 
-def imagesToInputMatrix(dir, csv_name):
+def imagesToInputMatrix(dir, save_as_csv = True, csv_name = "matrix.csv"):
     first_elem = True
     for filename in os.listdir(dir):
         if filename.endswith(".jpg") or filename.endswith(".png"):
@@ -67,18 +70,19 @@ def imagesToInputMatrix(dir, csv_name):
     matrix = np.array(vector_list)
     matrix = 255 - matrix
     np.random.shuffle(matrix)
-    names = []
-    for i in range(784):
-        temp = "label_" + str(i)
-        names.append(temp)
-    names.append("labels")
+    if save_as_csv:
+        names = []
+        for i in range(784):
+            temp = "label_" + str(i)
+            names.append(temp)
+        names.append("labels")
 
-    df_matrix = pd.DataFrame(matrix,columns=names)
-    df_matrix.to_csv(csv_name)
+        df_matrix = pd.DataFrame(matrix,columns=names)
+        df_matrix.to_csv(csv_name)
     return matrix
 
 #Used to transform a single image
-def singleImageToVector(filename):
+def singleImageToVector(filename, save_as_csv = True, csv_name = "X.csv"):
     image = Image.open(filename, mode='r')
     greyscale = image.convert(mode='L')
     resized = greyscale.resize((28, 28))
@@ -88,4 +92,12 @@ def singleImageToVector(filename):
     vector = np.transpose(vector)
 
     #We do this because in our dataset 255 is used for the darkest values and in pillow it's used for the lightest
-    return 255 - vector
+    vector = 255 - vector
+    if save_as_csv:
+        names = []
+        for i in range(784):
+            temp = "label_" + str(i)
+            names.append(temp)
+        df_vector = pd.DataFrame(vector, columns=names)
+        df_vector.to_csv(csv_name)
+    return vector
