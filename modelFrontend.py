@@ -1,4 +1,4 @@
-from model
+import
 import tensorflow as tf
 
 #Use this to call on the function of the functions from the modelBackend.py file.
